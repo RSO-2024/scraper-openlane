@@ -10,6 +10,20 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
     deploy:
       replicas: 10
+  chrome:
+    deploy:
+      replicas: 2
+    image: selenium/node-chrome
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_VNC_NO_PASSWORD=true
+
+    restart: always
   selenium-hub:
     image: selenium/hub:4.20.0-20240505
     container_name: selenium-hub
