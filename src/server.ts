@@ -5,9 +5,26 @@ import { v4 as uuidv4 } from 'uuid';
 import { S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import axios from 'axios';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import path from 'path';
 
 dotenv.config();
 
+const PROTO_PATH = path.join(__dirname, './price.proto');
+const packageDefinition = protoLoader.loadSync(PROTO_PATH);
+const priceProto: any = grpc.loadPackageDefinition(packageDefinition).PriceService;
+const client = new priceProto('localhost:50051', grpc.credentials.createInsecure());
+
+function invokeUpdatePricesForId(id: string) {
+  client.UpdatePricesForId({ id }, (err: any, response: any) => {
+    if (err) {
+      console.error('Error invoking UpdatePricesForId:', err.message);
+      return;
+    }
+    console.log(`Response for ID "${id}":`, response.success ? 'Success' : 'Failure');
+  });
+}
 
 const s3Client = new S3Client({
   forcePathStyle: true,
@@ -176,7 +193,7 @@ async function scrapeWithSeleniumGrid() {
         console.error('Error inserting data:', error);
       } else {
         console.log('Data inserted successfully:', data);
-
+        invokeUpdatePricesForId(data[0].id);
 
 
         let i = 1;

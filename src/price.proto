@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service PriceService {
+  rpc UpdatePricesForId (UpdateRequest) returns (UpdateResponse);
+}
+
+message UpdateRequest {
+  string id = 1;
+}
+
+message UpdateResponse {
+  bool success = 1;
+}
