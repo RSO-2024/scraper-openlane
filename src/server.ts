@@ -36,6 +36,10 @@ const s3Client = new S3Client({
   }
 })
 // Create a single supabase client for interacting with your database
+if(process.env.SUPABASEURL === undefined || process.env.SUPABASEKEY === undefined) {
+  console.error('Please set ENV variables');
+  while(1){}
+}
 const supabase = createClient(process.env.SUPABASEURL!, process.env.SUPABASEKEY!)
 
 async function dismissAndRetry(driver: WebDriver, action: () => Promise<void>, maxRetries = 10): Promise<void> {
